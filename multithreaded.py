@@ -2,6 +2,12 @@ import numpy as np
 import cv2, os, datetime
 from colorthief import ColorThief
 from multiprocessing import Process
+from threading import Thread, Condition
+
+# get music
+import sys
+sys.path.append('../color-coded-music')
+from color_music import *
 
 def read_image():
 	cap = cv2.VideoCapture(0)
@@ -47,9 +53,10 @@ def process_image():
 	# get the dominant color
 	dominant_color = color_thief.get_color(quality=1)
 	print("Dominant: ", dominant_color)
+	addOrClear(dominant_color)
 	# build a color palette
-	palette = color_thief.get_palette(color_count=6)
-	print("Palette: ", palette)
+	# palette = color_thief.get_palette(color_count=6)
+	# print("Palette: ", palette)
 
 def info(title):
 	print(title)
@@ -59,4 +66,11 @@ def info(title):
 
 if __name__ == '__main__':
 	info('main line')
+	drum_thread = Thread(name='consumer1', target=drum, args=())
+	drum_thread.start()
+	addOrClear((0, 0, 0))
+	sleep(.2)
+	addOrClear((0, 0, 0))
+	sleep(.4)
+	addOrClear((0, 0, 0))
 	read_image()
